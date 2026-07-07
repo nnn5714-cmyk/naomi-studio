@@ -571,6 +571,8 @@ function syncVideos(){
 window.addEventListener('load', ()=>{
   setTimeout(()=>document.body.classList.add('is-loaded'), 150);
 });
+/* deep link: #menu opens the nav screen directly */
+if(location.hash === '#menu') document.body.classList.add('is-menu');
 /* fallback in case load hangs on a video */
 setTimeout(()=>document.body.classList.add('is-loaded'), 2500);
 
