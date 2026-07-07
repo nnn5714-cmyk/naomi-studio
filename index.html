@@ -393,7 +393,7 @@ const vid = n => ({type:'video', src:`images/vid-${n}.mp4`});
 
 const CATEGORIES = [
   {name:'CAMPAIGN',  items:[1,2,3,4,5,14,15,16,9,11,12,13,6,7,8].map(cam), caption:i=>i<8?'FACADE PATTERN CAMPAIGN':'HENRY COTTON CAMPAIGN'},
-  {name:'LOOKBOOK',  items:[...[1].map(look), ...[17,34,35,36,38].map(img), ...[3,4,5].map(look), ...[1,5,9,26].map(img), ...[10,11,12,13,14,15,16,17,18].map(look)]},
+  {name:'LOOKBOOK',  items:[...[1].map(look), ...[17,34].map(img), ...[10,11,12,13,14,15,16,17,18].map(look), ...[35,36,38].map(img), ...[3,4,5].map(look), ...[1,5,9,26].map(img)]},
   {name:'EDITORIAL', items:[...[29,2,4,3].map(img), ...[1].map(edt), ...[10,13].map(img), ...[2,3,4].map(edt), ...[7,15,23].map(img), ...[5,6].map(edt)]},
   {name:'VIDEO',     items:[4,3,5,6,1,2].map(vid)},
   {name:'BEAUTY',    items:[...[24,25,31,32,40].map(img), ...[1,2,3,4].map(bty), ...[19,28].map(img)]},
