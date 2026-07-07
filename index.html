@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NAOMI STUDIO — AI Fashion Lookbook</title>
+<meta name="description" content="AI-powered fashion lookbook studio. Cinematic, surreal, avant-garde visuals for fashion & beauty brands." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-dark:#0C0C0C;
+  --color-light:#f5f3f0;
+  --font:'Oswald','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --fs-h1:clamp(36px,5.5vw,82px);
+  --fs-h3:clamp(21px,3.4vw,44px);
+  --fs-h4:clamp(19px,3.2vw,32px);
+  --fs-small:clamp(13px,1vw,15px);
+  --fs-mini:clamp(12px,1vw,13px);
+  --cubic:cubic-bezier(.77,0,.175,1);
+  --cubic-2:cubic-bezier(.5,0,.5,1);
+  --bar-h:32px;
+  --bar-pad:1.6rem;
+  --col-gap:6vw;
+  --row-gap:22vh;
+  --offset-gap:12vh;
+  --focus-inset:calc(var(--bar-h) + var(--bar-pad)*2);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{
+  background:var(--color-light);
+  color:var(--color-dark);
+  font-family:var(--font);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img,video{display:block}
+
+/* ── giant center name ─────────────────────────── */
+.giant-name{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:500;
+  max-width:70%;width:max-content;
+  text-align:center;
+  font-size:var(--fs-h1);
+  font-weight:700;line-height:.95;
+  letter-spacing:.01em;text-transform:uppercase;
+  pointer-events:none;
+  perspective:1000px;
+  mix-blend-mode:darken;
+}
+.giant-name span{
+  display:block;
+  transform:translateY(50%) rotateX(-40deg);
+  opacity:0;filter:blur(12px);
+  transition:all .79s var(--cubic) .6s;
+}
+body.is-loaded .giant-name span{transform:none;opacity:1;filter:blur(0)}
+body.is-menu .giant-name,body.is-list .giant-name,body.is-detail .giant-name{opacity:0;transition:opacity .4s var(--cubic-2)}
+.giant-name{transition:opacity .4s var(--cubic-2) .2s}
+
+/* ── header / menu opener ──────────────────────── */
+.site-header{
+  position:fixed;top:var(--bar-pad);left:50%;
+  transform:translateX(-50%);
+  z-index:1100;
+}
+.nav-opener{
+  width:48px;height:48px;
+  cursor:pointer;position:relative;
+  perspective:700px;
+}
+.nav-opener i{
+  position:absolute;top:50%;left:50%;
+  width:100%;height:4px;background:var(--color-dark);
+  transform:translate(-50%,-50%);
+  transition:transform .49s var(--cubic),background .49s ease;
+}
+.nav-opener i:nth-child(2){transform:translate(-50%,-50%) rotate(-90deg)}
+body.is-menu .nav-opener i{background:var(--color-light)}
+body.is-menu .nav-opener i:nth-child(1){transform:translate(-50%,-50%) rotate(45deg)}
+body.is-menu .nav-opener i:nth-child(2){transform:translate(-50%,-50%) rotate(-45deg) scaleX(1)}
+body.is-detail .site-header{display:none}
+
+/* ── fullscreen nav overlay ────────────────────── */
+.navscreen{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--color-dark);color:var(--color-light);
+  opacity:0;pointer-events:none;filter:blur(12px);
+  transition:opacity .49s var(--cubic-2),filter .49s var(--cubic-2);
+}
+body.is-menu .navscreen{opacity:1;pointer-events:all;filter:blur(0)}
+.navscreen__inner{
+  height:100%;padding:calc(var(--bar-pad) + var(--bar-h)) 2.4rem var(--bar-pad);
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.navscreen__menu{flex:1;display:flex;flex-direction:column;justify-content:center;gap:.4rem}
+.navscreen__menu a{
+  font-size:var(--fs-h1);font-weight:700;line-height:1.05;
+  text-transform:uppercase;width:max-content;
+  border-bottom:3px solid transparent;
+  transform:translateY(40%) rotateX(-40deg);opacity:0;filter:blur(8px);
+  transition:all .59s var(--cubic);
+}
+.navscreen__menu a:hover,.navscreen__menu a.is-active{border-color:var(--color-light)}
+body.is-menu .navscreen__menu a{transform:none;opacity:1;filter:blur(0)}
+body.is-menu .navscreen__menu a:nth-child(2){transition-delay:.08s}
+.navscreen__about{
+  max-width:52ch;font-size:var(--fs-h4);font-weight:400;line-height:1.35;
+  opacity:0;transform:translateY(20px);
+  transition:all .59s var(--cubic) .15s;
+}
+body.is-menu .navscreen__about{opacity:1;transform:none}
+.navscreen__footer{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:2rem;margin-top:3rem;flex-wrap:wrap;
+  font-size:var(--fs-small);text-transform:uppercase;letter-spacing:.06em;
+  opacity:0;transition:opacity .59s var(--cubic) .25s;
+}
+body.is-menu .navscreen__footer{opacity:1}
+.navscreen__footer a{border-bottom:1px solid transparent;transition:border-color .3s}
+.navscreen__footer a:hover{border-color:var(--color-light)}
+.navscreen__footer .links{display:flex;gap:2rem}
+.copyright{opacity:.5}
+
+/* ── grid canvas ───────────────────────────────── */
+.overview{
+  width:110%;position:relative;left:-5%;
+  margin-top:calc(var(--offset-gap) * -1);
+  display:grid;grid-template-columns:repeat(5,1fr);
+  column-gap:var(--col-gap);row-gap:var(--row-gap);
+  padding-bottom:40vh;
+}
+body.is-list .overview,body.is-detail .overview{display:none}
+.overview-item{
+  height:calc((100svh + var(--offset-gap)*2)/3 - var(--row-gap)*2/3);
+  position:relative;
+}
+.overview-item:nth-child(5n+2),
+.overview-item:nth-child(5n+4){
+  transform:translateY(calc(50% + var(--row-gap)/2));
+}
+.overview-item .media{
+  width:160%;height:80%;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  will-change:transform;
+}
+.overview-item img,.overview-item video{
+  max-width:100%;max-height:100%;width:auto;height:auto;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(1);
+  cursor:pointer;
+  transition:transform .6s var(--cubic-2),opacity 0s;
+  opacity:0;
+}
+body.is-loaded .overview-item img,
+body.is-loaded .overview-item video{opacity:1;transition:transform .6s var(--cubic-2),opacity .01s linear var(--d,0s)}
+.overview-item img:hover,.overview-item video:hover{transform:translate(-50%,-50%) scale(1.06)}
+
+/* ── work list (categories) ────────────────────── */
+.worklist{
+  display:none;
+  min-height:100svh;
+  padding:calc(var(--bar-pad) + var(--bar-h)) 1.2rem;
+  text-align:center;
+  flex-direction:column;justify-content:center;
+}
+body.is-list .worklist{display:flex}
+body.is-detail .worklist{display:none}
+.worklist__cat{
+  font-size:var(--fs-h1);
+  font-weight:700;line-height:1.16;
+  text-transform:uppercase;letter-spacing:.01em;
+  cursor:pointer;user-select:none;
+  width:max-content;max-width:100%;
+  margin:0 auto;
+  position:relative;
+  opacity:0;transform:translateY(30px);filter:blur(8px);
+  transition:color .3s ease;
+}
+body.is-list.is-loaded .worklist__cat{
+  animation:catIn .69s var(--cubic) forwards;
+  animation-delay:var(--cd,0s);
+}
+@keyframes catIn{to{opacity:1;transform:none;filter:blur(0)}}
+.worklist__cat:hover{color:#8a8a8a}
+
+/* ── detail view (gallery) ─────────────────────── */
+.detail{display:none}
+body.is-detail .detail{display:block;animation:detailIn .6s var(--cubic-2)}
+@keyframes detailIn{from{opacity:0}to{opacity:1}}
+
+.detail__title{
+  position:fixed;top:var(--bar-pad);left:50%;
+  transform:translateX(-50%);z-index:900;
+  font-size:var(--fs-h4);font-weight:700;line-height:var(--bar-h);
+  text-transform:uppercase;letter-spacing:.02em;
+  pointer-events:none;
+}
+
+/* left thumbs column = the actual scrolling content */
+.detail__rail{
+  width:max-content;
+  padding:calc(50svh - 110px) 0 calc(50svh - 110px) 1.4rem;
+  display:flex;flex-direction:column;
+  gap:5.5vh;
+  position:relative;z-index:820;
+}
+.detail__rail .thumb{
+  width:104px;cursor:pointer;
+  opacity:.5;
+  transform:translateX(0);
+  transition:opacity .4s ease,transform .59s var(--cubic);
+}
+.detail__rail .thumb:hover{opacity:1}
+.detail__rail .thumb.is-active{opacity:1;transform:translateX(34px)}
+.detail__rail .thumb img,.detail__rail .thumb video{width:100%;height:auto;pointer-events:none}
+
+/* fixed focus stage: images swap in place via crossfade */
+.detail__focus{
+  position:fixed;z-index:800;
+  top:var(--focus-inset);bottom:var(--focus-inset);
+  left:50%;transform:translateX(-50%);
+  width:min(56vw,calc(100vw - 500px));
+}
+.detail__focus__item{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .49s var(--cubic-2);
+}
+.detail__focus__item.is-active{opacity:1;pointer-events:all}
+.detail__focus__item .holder{position:relative}
+.detail__focus__item img,.detail__focus__item video{
+  max-width:min(56vw,calc(100vw - 500px));
+  max-height:calc(100svh - var(--focus-inset)*2);
+  width:auto;height:auto;
+  cursor:zoom-in;
+}
+.detail__focus__item .caption{
+  position:absolute;top:0;right:-19px;height:100%;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  text-align:center;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:11px;letter-spacing:.02em;
+  white-space:nowrap;
+}
+
+.detail__nav{
+  position:fixed;bottom:var(--bar-pad);left:50%;
+  transform:translateX(-50%);z-index:900;
+  display:flex;gap:2.6rem;
+}
+.detail__nav a{
+  font-size:var(--fs-h4);font-weight:700;line-height:var(--bar-h);
+  text-transform:uppercase;cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:border-color .3s;
+}
+.detail__nav a:hover,.detail__nav a.is-on{border-color:var(--color-dark)}
+
+/* index overlay: all thumbs of current category */
+.detail__index{
+  position:fixed;inset:0;z-index:850;
+  background:color-mix(in srgb,var(--color-light) 72%,transparent);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s var(--cubic-2);
+  overflow-y:auto;
+}
+body.is-index .detail__index{opacity:1;pointer-events:all}
+.detail__index-grid{
+  display:flex;flex-wrap:wrap;gap:2.4rem;
+  align-items:center;justify-content:center;
+  max-width:84vw;margin:auto;padding:14vh 0;
+}
+.detail__index-grid .ithumb{cursor:pointer;transition:transform .4s var(--cubic-2)}
+.detail__index-grid .ithumb:hover{transform:scale(1.05)}
+.detail__index-grid .ithumb img,.detail__index-grid .ithumb video{height:15vh;width:auto}
+
+/* ── bottom bar: view switch ───────────────────── */
+.site-footer{
+  position:fixed;bottom:var(--bar-pad);left:50%;
+  transform:translateX(-50%);z-index:900;
+  display:flex;gap:1.4rem;
+  perspective:1000px;
+}
+.site-footer a{
+  font-size:var(--fs-h4);font-weight:600;line-height:var(--bar-h);
+  text-transform:uppercase;cursor:pointer;
+  border-bottom:2px solid transparent;
+  transform:translateY(50%) rotateX(-40deg);opacity:0;filter:blur(12px);
+  transition:opacity .49s var(--cubic),filter .49s var(--cubic),transform .49s var(--cubic),border-color .3s;
+}
+body.is-loaded .site-footer a{transform:none;opacity:1;filter:blur(0)}
+.site-footer a.is-active{border-color:var(--color-dark)}
+body.is-menu .site-footer,body.is-detail .site-footer{opacity:0;pointer-events:none}
+.site-footer{transition:opacity .3s var(--cubic-2)}
+
+/* ── lightbox ──────────────────────────────────── */
+.lightbox{
+  position:fixed;inset:0;z-index:1200;
+  background:rgba(245,243,240,.96);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;cursor:zoom-out;
+  transition:opacity .4s var(--cubic-2);
+}
+.lightbox.is-open{opacity:1;pointer-events:all}
+.lightbox img,.lightbox video{max-width:88vw;max-height:88vh;width:auto;height:auto}
+
+@media (max-width:768px){
+  :root{--col-gap:1.6rem;--row-gap:14vh;--offset-gap:8vh;--bar-h:24px;--bar-pad:1.1rem}
+  .overview{width:100%;left:0}
+  .overview-item .media{width:140%}
+  .giant-name{max-width:88%}
+  .navscreen__inner{padding-left:1.2rem;padding-right:1.2rem}
+  .detail__rail{padding-left:.7rem;gap:4vh}
+  .detail__rail .thumb{width:44px}
+  .detail__rail .thumb.is-active{transform:translateX(12px)}
+  .detail__focus{left:auto;right:4vw;transform:none;width:calc(100vw - 44px - 12vw)}
+  .detail__focus__item img,.detail__focus__item video{max-width:calc(100vw - 44px - 12vw)}
+  .detail__focus__item .caption{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-opener" id="navOpener" aria-label="Menu"><i></i><i></i></div>
+</header>
+
+<div class="navscreen">
+  <div class="navscreen__inner">
+    <nav class="navscreen__menu">
+      <a href="#" data-view="grid" class="is-active">Overview</a>
+      <a href="#" data-view="list">Work</a>
+    </nav>
+    <div class="navscreen__about">
+      NAOMI is an AI-powered fashion lookbook studio.
+      We craft high-sensitivity visuals for fashion
+      and beauty brands — from campaign visuals to full lookbook production.
+    </div>
+    <div class="navscreen__footer">
+      <a href="mailto:nnn5714@gmail.com">Contact Me</a>
+      <div class="links">
+        <a href="https://www.instagram.com/nnn.co.kr/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="copyright">© 2026 NAOMI Studio — All rights reserved</div>
+    </div>
+  </div>
+</div>
+
+<h1 class="giant-name"><span>naomi studio</span></h1>
+
+<main>
+  <section class="overview" id="overview"></section>
+  <section class="worklist" id="worklist"></section>
+  <section class="detail" id="detail">
+    <div class="detail__title" id="detailTitle"></div>
+    <div class="detail__rail" id="detailRail"></div>
+    <div class="detail__focus" id="detailFocus"></div>
+    <div class="detail__index" id="detailIndex"><div class="detail__index-grid" id="detailIndexGrid"></div></div>
+    <nav class="detail__nav">
+      <a id="btnIndex">Index</a>
+      <a id="btnBack">Back</a>
+    </nav>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <a data-view="grid" class="is-active">Grid</a>
+  <a data-view="list">List</a>
+</footer>
+
+<div class="lightbox" id="lightbox"></div>
+
+<script>
+/* ── assets & categories ────────────────────────── */
+const img = n => ({type:'img', src:`images/img-${String(n).padStart(2,'0')}.jpg`});
+const cam = n => ({type:'img', src:`images/cam-${String(n).padStart(2,'0')}.jpg`});
+const look = n => ({type:'img', src:`images/look-${String(n).padStart(2,'0')}.jpg`});
+const edt = n => ({type:'img', src:`images/edt-${String(n).padStart(2,'0')}.jpg`});
+const bty = n => ({type:'img', src:`images/bty-${String(n).padStart(2,'0')}.jpg`});
+const prd = n => ({type:'img', src:`images/prd-${String(n).padStart(2,'0')}.jpg`});
+const vid = n => ({type:'video', src:`images/vid-${n}.mp4`});
+
+const CATEGORIES = [
+  {name:'CAMPAIGN',  items:[1,2,3,4,5,14,15,16,9,10,11,12,13,6,7,8].map(cam), caption:i=>i<8?'FACADE PATTERN CAMPAIGN':'HENRY COTTON CAMPAIGN'},
+  {name:'LOOKBOOK',  items:[...[1].map(look), ...[17,34,35,36,38,39].map(img), ...[3,4,5,7].map(look), ...[1,5,9,26].map(img), ...[10,11,12,13,14,15,16,17,18].map(look)]},
+  {name:'EDITORIAL', items:[...[3].map(img), ...[1].map(edt), ...[10,13].map(img), ...[2,3,4].map(edt), ...[2,4,29,7,15,23].map(img), ...[5,6,8].map(edt)]},
+  {name:'VIDEO',     items:[4,3,5,6,1,2].map(vid)},
+  {name:'BEAUTY',    items:[...[24,25,31,32,40].map(img), ...[1,2,3,4].map(bty), ...[19,28].map(img)]},
+  {name:'PRODUCT',   items:[...[18,27].map(img), vid(7), ...[1,2].map(prd)]},
+];
+
+/* flat list for the overview grid: images with videos interleaved */
+const assets = [];
+{
+  const imgs = Array.from({length:40},(_,i)=>img(i+1));
+  let v = 1;
+  imgs.forEach((a,i)=>{
+    assets.push(a);
+    if((i+1)%8===0 && v<=5) assets.push(vid(v++));
+  });
+}
+
+function createMedia(a, {lazy=true, autoplay=true, lightboxable=true}={}){
+  let el;
+  if(a.type==='video'){
+    el = document.createElement('video');
+    el.src = a.src;
+    el.muted = true; el.loop = true; el.playsInline = true;
+    el.setAttribute('muted',''); el.setAttribute('playsinline','');
+    if(autoplay){ el.autoplay = true; el.setAttribute('autoplay',''); }
+  }else{
+    el = document.createElement('img');
+    el.src = a.src;
+    el.loading = lazy ? 'lazy' : 'eager';
+    el.alt = 'Lookbook';
+  }
+  if(lightboxable) el.addEventListener('click', ()=>openLightbox(a));
+  return el;
+}
+
+/* ── overview grid ──────────────────────────────── */
+const overview = document.getElementById('overview');
+assets.forEach((a,i)=>{
+  const item = document.createElement('div');
+  item.className = 'overview-item';
+  const media = document.createElement('div');
+  media.className = 'media';
+  const el = createMedia(a, {lazy: i>=12});
+  el.style.setProperty('--d', (Math.random()*1.4+.2).toFixed(2)+'s');
+  media.appendChild(el);
+  item.appendChild(media);
+  overview.appendChild(item);
+});
+
+/* ── work list (category names → detail view) ───── */
+const worklist = document.getElementById('worklist');
+CATEGORIES.forEach((cat,ci)=>{
+  const h = document.createElement('h2');
+  h.className = 'worklist__cat';
+  h.textContent = cat.name;
+  h.style.setProperty('--cd', (ci*.09).toFixed(2)+'s');
+  h.addEventListener('click', ()=>openDetail(cat));
+  worklist.appendChild(h);
+});
+
+/* ── detail view (fixed focus stage + scrolling rail) ── */
+const detailTitle = document.getElementById('detailTitle');
+const detailRail  = document.getElementById('detailRail');
+const detailFocus = document.getElementById('detailFocus');
+const detailIndexGrid = document.getElementById('detailIndexGrid');
+let detailItems = [];   /* [{thumb, focus}] */
+let activeIdx = -1;
+
+function openDetail(cat){
+  detailTitle.textContent = cat.name;
+  detailRail.innerHTML = '';
+  detailFocus.innerHTML = '';
+  detailIndexGrid.innerHTML = '';
+  detailItems = [];
+  activeIdx = -1;
+  const total = cat.items.length;
+
+  cat.items.forEach((a,i)=>{
+    /* fixed focus slide */
+    const focus = document.createElement('div');
+    focus.className = 'detail__focus__item';
+    const holder = document.createElement('div');
+    holder.className = 'holder';
+    holder.appendChild(createMedia(a, {autoplay:false}));
+    const cap = document.createElement('div');
+    cap.className = 'caption';
+    const capPrefix = cat.caption ? cat.caption(i) : `NAOMI Studio — ${cat.name}`;
+    cap.textContent = `${capPrefix} ${String(i+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+    holder.appendChild(cap);
+    focus.appendChild(holder);
+    detailFocus.appendChild(focus);
+
+    /* left rail thumb (this column is the scroll content) */
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    thumb.appendChild(createMedia(a, {lightboxable:false}));
+    thumb.addEventListener('click', ()=>scrollToThumb(i));
+    detailRail.appendChild(thumb);
+
+    /* index overlay thumb */
+    const ithumb = document.createElement('div');
+    ithumb.className = 'ithumb';
+    ithumb.appendChild(createMedia(a, {lightboxable:false}));
+    ithumb.addEventListener('click', ()=>{
+      document.body.classList.remove('is-index');
+      scrollToThumb(i, false);
+    });
+    detailIndexGrid.appendChild(ithumb);
+
+    detailItems.push({thumb, focus});
+  });
+
+  document.body.classList.add('is-detail');
+  document.body.classList.remove('is-menu','is-index');
+  window.scrollTo({top:0});
+  setActive(0);
+  syncVideos();
+}
+
+function closeDetail(){
+  document.body.classList.remove('is-detail','is-index');
+  detailFocus.innerHTML = '';   /* stop videos, free memory */
+  detailRail.innerHTML = '';
+  detailIndexGrid.innerHTML = '';
+  detailItems = [];
+  activeIdx = -1;
+  window.scrollTo({top:0});
+  syncVideos();
+}
+
+function setActive(i){
+  if(i === activeIdx || !detailItems[i]) return;
+  activeIdx = i;
+  detailItems.forEach((d,k)=>{
+    const on = k === i;
+    d.thumb.classList.toggle('is-active', on);
+    d.focus.classList.toggle('is-active', on);
+    const v = d.focus.querySelector('video');
+    if(v){ on ? v.play().catch(()=>{}) : v.pause(); }
+  });
+}
+
+function scrollToThumb(i, smooth=true){
+  const t = detailItems[i]?.thumb;
+  if(!t) return;
+  const r = t.getBoundingClientRect();
+  const top = window.scrollY + r.top + r.height/2 - window.innerHeight/2;
+  window.scrollTo({top, behavior: smooth ? 'smooth' : 'auto'});
+}
+
+/* active slide = thumb closest to viewport center */
+function updateDetailScroll(){
+  if(!document.body.classList.contains('is-detail') || !detailItems.length) return;
+  const mid = window.innerHeight/2;
+  let best = 0, bestDist = Infinity;
+  detailItems.forEach((d,i)=>{
+    const r = d.thumb.getBoundingClientRect();
+    const dist = Math.abs(r.top + r.height/2 - mid);
+    if(dist < bestDist){ bestDist = dist; best = i; }
+  });
+  setActive(best);
+}
+window.addEventListener('scroll', updateDetailScroll, {passive:true});
+
+/* pause videos that are not currently displayed */
+function syncVideos(){
+  document.querySelectorAll('video').forEach(v=>{
+    if(v.closest('.lightbox') || v.closest('.detail__focus')) return;
+    const visible = v.offsetParent !== null;
+    if(visible){ v.play().catch(()=>{}); } else { v.pause(); }
+  });
+}
+
+/* ── intro reveal ───────────────────────────────── */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>document.body.classList.add('is-loaded'), 150);
+});
+/* fallback in case load hangs on a video */
+setTimeout(()=>document.body.classList.add('is-loaded'), 2500);
+
+/* ── overview mouse parallax ────────────────────── */
+let mx=0,my=0,cx=0,cy=0;
+window.addEventListener('mousemove',e=>{
+  mx = (e.clientX/window.innerWidth - .5);
+  my = (e.clientY/window.innerHeight - .5);
+});
+const medias = ()=>document.querySelectorAll('.overview-item .media');
+function raf(){
+  const b = document.body.classList;
+  if(!b.contains('is-list') && !b.contains('is-detail')){
+    cx += (mx-cx)*.04;
+    cy += (my-cy)*.04;
+    medias().forEach((m,i)=>{
+      const depth = 14 + (i%5)*7;   /* per-column depth */
+      m.style.transform = `translate(calc(-50% + ${(-cx*depth).toFixed(1)}px), calc(-50% + ${(-cy*depth).toFixed(1)}px))`;
+    });
+  }
+  requestAnimationFrame(raf);
+}
+raf();
+
+/* ── menu ───────────────────────────────────────── */
+const opener = document.getElementById('navOpener');
+opener.addEventListener('click', ()=>document.body.classList.toggle('is-menu'));
+
+/* ── detail nav ─────────────────────────────────── */
+document.getElementById('btnBack').addEventListener('click', closeDetail);
+const btnIndex = document.getElementById('btnIndex');
+btnIndex.addEventListener('click', ()=>{
+  btnIndex.classList.toggle('is-on', document.body.classList.toggle('is-index'));
+});
+
+/* ── grid / list switch ─────────────────────────── */
+document.querySelectorAll('[data-view]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    const view = a.dataset.view;
+    closeDetail();
+    document.body.classList.toggle('is-list', view==='list');
+    document.body.classList.remove('is-menu');
+    document.querySelectorAll('[data-view]').forEach(x=>
+      x.classList.toggle('is-active', x.dataset.view===view));
+    window.scrollTo({top:0});
+    syncVideos();
+  });
+});
+
+/* ── lightbox ───────────────────────────────────── */
+const lightbox = document.getElementById('lightbox');
+function openLightbox(a){
+  lightbox.innerHTML = '';
+  let el;
+  if(a.type==='video'){
+    el = document.createElement('video');
+    el.src = a.src; el.muted = true; el.loop = true; el.autoplay = true; el.playsInline = true;
+    el.controls = true;
+  }else{
+    el = document.createElement('img');
+    el.src = a.src; el.alt = 'Lookbook';
+  }
+  lightbox.appendChild(el);
+  lightbox.classList.add('is-open');
+}
+lightbox.addEventListener('click', ()=>{
+  lightbox.classList.remove('is-open');
+  setTimeout(()=>lightbox.innerHTML='',400);
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if(lightbox.classList.contains('is-open')){
+      lightbox.classList.remove('is-open');
+      setTimeout(()=>lightbox.innerHTML='',400);
+    }else if(document.body.classList.contains('is-index')){
+      document.body.classList.remove('is-index');
+      btnIndex.classList.remove('is-on');
+    }else if(document.body.classList.contains('is-detail')){
+      closeDetail();
+    }
+    document.body.classList.remove('is-menu');
+  }
+});
+</script>
+</body>
+</html>
